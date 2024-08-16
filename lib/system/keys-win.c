@@ -667,7 +667,7 @@ static int privkey_import_ncrypt(gnutls_privkey_t pkey, const char *url,
 	WCHAR algo_str[64];
 	DWORD algo_str_size = 0;
 
-	r = pNCryptOpenKey(*sctx, &nc, kpi->pwszContainerName, 0, 0);
+	r = pNCryptOpenKey(*sctx, &nc, kpi->pwszContainerName, 0, NCRYPT_MACHINE_KEY_FLAG);
 	if (FAILED(r)) {
 		ret = gnutls_assert_val(GNUTLS_E_REQUESTED_DATA_NOT_AVAILABLE);
 		goto cleanup;
@@ -765,7 +765,7 @@ int _gnutls_privkey_import_system_url(gnutls_privkey_t pkey, const char *url)
 	blob.pbData = id;
 
 	store = CertOpenStore(CERT_STORE_PROV_SYSTEM, 0, 0,
-			      CERT_SYSTEM_STORE_CURRENT_USER, L"MY");
+			      CERT_SYSTEM_STORE_LOCAL_MACHINE, L"MY");
 	if (store == NULL) {
 		gnutls_assert();
 		ret = GNUTLS_E_FILE_ERROR;
@@ -877,7 +877,7 @@ int _gnutls_x509_crt_import_system_url(gnutls_x509_crt_t crt, const char *url)
 	blob.pbData = id;
 
 	store = CertOpenStore(CERT_STORE_PROV_SYSTEM, 0, 0,
-			      CERT_SYSTEM_STORE_CURRENT_USER, L"MY");
+			      CERT_SYSTEM_STORE_LOCAL_MACHINE, L"MY");
 	if (store == NULL) {
 		gnutls_assert();
 		ret = GNUTLS_E_FILE_ERROR;
@@ -1119,7 +1119,7 @@ int gnutls_system_key_iter_get_info(gnutls_system_key_iter_t *iter,
 			return gnutls_assert_val(GNUTLS_E_MEMORY_ERROR);
 
 		(*iter)->store = CertOpenStore(CERT_STORE_PROV_SYSTEM, 0, 0,
-					       CERT_SYSTEM_STORE_CURRENT_USER,
+					       CERT_SYSTEM_STORE_LOCAL_MACHINE,
 					       L"MY");
 		if ((*iter)->store == NULL) {
 			gnutls_free(*iter);
@@ -1191,7 +1191,7 @@ int gnutls_system_key_delete(const char *cert_url, const char *key_url)
 	blob.pbData = id;
 
 	store = CertOpenStore(CERT_STORE_PROV_SYSTEM, 0, 0,
-			      CERT_SYSTEM_STORE_CURRENT_USER, L"MY");
+			      CERT_SYSTEM_STORE_LOCAL_MACHINE, L"MY");
 	if (store != NULL) {
 		do {
 			cert = CertFindCertificateInStore(
